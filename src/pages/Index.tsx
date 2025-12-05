@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import Icon from "@/components/ui/icon";
 import { useState } from "react";
 
@@ -14,9 +15,13 @@ const properties = [
     type: "Жилая недвижимость",
     price: "12 500 000 ₽",
     area: "65 м²",
+    rooms: "2 комнаты",
+    floor: "12 этаж из 25",
     location: "ул. Тверская, д. 15",
     image: "https://cdn.poehali.dev/projects/0f90dbeb-cb45-448e-846f-14970e9ce9a5/files/1ff5a945-6217-4147-99ab-45fc1775bd19.jpg",
-    description: "Современная квартира с панорамными окнами и качественным ремонтом"
+    description: "Современная квартира с панорамными окнами и качественным ремонтом",
+    fullDescription: "Просторная двухкомнатная квартира в центре Москвы с панорамными окнами и видом на город. Евроремонт выполнен с использованием качественных материалов. Кухня-гостиная, изолированная спальня, санузел с ванной и душевой кабиной. Встроенная мебель и техника. Подземный паркинг, консьерж, охраняемая территория.",
+    features: ["Панорамные окна", "Качественный ремонт", "Встроенная мебель", "Подземный паркинг", "Охрана 24/7", "Консьерж"]
   },
   {
     id: 2,
@@ -24,9 +29,13 @@ const properties = [
     type: "Коммерческая недвижимость",
     price: "45 000 000 ₽",
     area: "180 м²",
+    rooms: "Открытое пространство + 3 кабинета",
+    floor: "15 этаж из 30",
     location: "Бизнес-центр «Москва-Сити»",
     image: "https://cdn.poehali.dev/projects/0f90dbeb-cb45-448e-846f-14970e9ce9a5/files/39efbdd5-c3b5-414e-819e-f1e38b07d28b.jpg",
-    description: "Престижный офис с современной инфраструктурой"
+    description: "Престижный офис с современной инфраструктурой",
+    fullDescription: "Представительский офис класса А в деловом центре Москва-Сити. Открытая планировка с возможностью зонирования, 3 отдельных переговорных комнаты, полностью оборудованная кухня. Панорамное остекление, система кондиционирования, пожарная сигнализация. Доступ 24/7, охрана, подземная парковка на 200 мест.",
+    features: ["Класс А", "Панорамное остекление", "Кондиционирование", "Переговорные", "Парковка", "Доступ 24/7"]
   },
   {
     id: 3,
@@ -34,9 +43,13 @@ const properties = [
     type: "Жилая недвижимость",
     price: "28 900 000 ₽",
     area: "120 м²",
+    rooms: "3 комнаты",
+    floor: "20 этаж из 35",
     location: "ЖК «Триумф Палас»",
     image: "https://cdn.poehali.dev/projects/0f90dbeb-cb45-448e-846f-14970e9ce9a5/files/5036e96a-7aca-459f-a988-1dd455a0f6b9.jpg",
-    description: "Роскошная квартира в элитном жилом комплексе"
+    description: "Роскошная квартира в элитном жилом комплексе",
+    fullDescription: "Роскошная трёхкомнатная квартира премиум-класса в элитном ЖК Триумф Палас. Дизайнерский ремонт с использованием натуральных материалов. Просторная гостиная с французскими окнами, две спальни, два санузла, гардеробная. Высота потолков 3.2 метра. Развитая инфраструктура: фитнес, бассейн, СПА, детская комната. Своя парковка и кладовка.",
+    features: ["Премиум класс", "Дизайнерский ремонт", "Высокие потолки", "Бассейн и СПА", "Фитнес-центр", "Своя парковка"]
   }
 ];
 
@@ -92,6 +105,13 @@ export default function Index() {
     email: "",
     message: ""
   });
+  const [selectedProperty, setSelectedProperty] = useState<typeof properties[0] | null>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  const openPropertyDialog = (property: typeof properties[0]) => {
+    setSelectedProperty(property);
+    setIsDialogOpen(true);
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -216,9 +236,9 @@ export default function Index() {
 
                   <div className="flex items-center justify-between pt-4 border-t">
                     <span className="text-2xl font-bold text-primary">{property.price}</span>
-                    <Button size="sm">
-                      <Icon name="Phone" size={16} className="mr-2" />
-                      Узнать больше
+                    <Button size="sm" onClick={() => openPropertyDialog(property)}>
+                      <Icon name="Eye" size={16} className="mr-2" />
+                      Подробнее
                     </Button>
                   </div>
                 </CardContent>
@@ -371,6 +391,111 @@ export default function Index() {
           </div>
         </div>
       </section>
+
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          {selectedProperty && (
+            <>
+              <DialogHeader>
+                <DialogTitle className="text-3xl font-bold mb-4">{selectedProperty.title}</DialogTitle>
+              </DialogHeader>
+              
+              <div className="space-y-6">
+                <div className="relative h-80 w-full rounded-lg overflow-hidden">
+                  <img 
+                    src={selectedProperty.image} 
+                    alt={selectedProperty.title}
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm px-4 py-2 rounded-full">
+                    <span className="text-sm font-semibold text-primary">{selectedProperty.type}</span>
+                  </div>
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-6">
+                  <Card className="border-none bg-secondary/30">
+                    <CardContent className="p-6">
+                      <h4 className="font-semibold text-lg mb-4">Основные характеристики</h4>
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between">
+                          <span className="text-muted-foreground flex items-center gap-2">
+                            <Icon name="Home" size={18} />
+                            Площадь
+                          </span>
+                          <span className="font-semibold">{selectedProperty.area}</span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-muted-foreground flex items-center gap-2">
+                            <Icon name="DoorOpen" size={18} />
+                            Комнаты
+                          </span>
+                          <span className="font-semibold">{selectedProperty.rooms}</span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-muted-foreground flex items-center gap-2">
+                            <Icon name="Building" size={18} />
+                            Этаж
+                          </span>
+                          <span className="font-semibold">{selectedProperty.floor}</span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-muted-foreground flex items-center gap-2">
+                            <Icon name="MapPin" size={18} />
+                            Расположение
+                          </span>
+                          <span className="font-semibold text-sm">{selectedProperty.location}</span>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  <Card className="border-none bg-primary/5">
+                    <CardContent className="p-6">
+                      <h4 className="font-semibold text-lg mb-4">Особенности</h4>
+                      <div className="flex flex-wrap gap-2">
+                        {selectedProperty.features.map((feature, index) => (
+                          <div key={index} className="bg-white px-3 py-1.5 rounded-full text-sm border border-border">
+                            {feature}
+                          </div>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+
+                <div>
+                  <h4 className="font-semibold text-lg mb-3">Подробное описание</h4>
+                  <p className="text-muted-foreground leading-relaxed">{selectedProperty.fullDescription}</p>
+                </div>
+
+                <div className="bg-secondary/30 rounded-lg p-6">
+                  <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+                    <div>
+                      <p className="text-sm text-muted-foreground mb-2">Стоимость</p>
+                      <p className="text-4xl font-bold text-primary">{selectedProperty.price}</p>
+                    </div>
+                    <div className="flex gap-3">
+                      <Button size="lg" className="text-lg">
+                        <Icon name="Phone" size={20} className="mr-2" />
+                        Позвонить
+                      </Button>
+                      <Button size="lg" variant="outline" className="text-lg" onClick={() => {
+                        setIsDialogOpen(false);
+                        setTimeout(() => {
+                          document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
+                        }, 300);
+                      }}>
+                        <Icon name="MessageCircle" size={20} className="mr-2" />
+                        Оставить заявку
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
 
       <footer className="bg-foreground text-background py-12 px-6">
         <div className="container mx-auto max-w-6xl">
