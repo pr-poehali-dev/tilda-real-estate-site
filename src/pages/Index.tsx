@@ -1,6 +1,11 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { useToast } from "@/hooks/use-toast";
 import Icon from "@/components/ui/icon";
+import { useState } from "react";
 
 const properties = [
   {
@@ -80,6 +85,27 @@ const testimonials = [
 ];
 
 export default function Index() {
+  const { toast } = useToast();
+  const [formData, setFormData] = useState({
+    name: "",
+    phone: "",
+    email: "",
+    message: ""
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    toast({
+      title: "Заявка отправлена!",
+      description: "Наш менеджер свяжется с вами в ближайшее время.",
+    });
+    setFormData({ name: "", phone: "", email: "", message: "" });
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-border">
@@ -240,42 +266,108 @@ export default function Index() {
               Готовы помочь вам найти идеальную недвижимость
             </p>
 
-            <div className="grid md:grid-cols-3 gap-8 mb-12">
-              <Card className="border-none shadow-lg">
-                <CardContent className="p-8 text-center">
-                  <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <Icon name="Phone" size={28} className="text-primary" />
-                  </div>
-                  <h3 className="font-semibold mb-2">Телефон</h3>
-                  <p className="text-muted-foreground">+7 (495) 123-45-67</p>
-                </CardContent>
-              </Card>
+            <div className="grid md:grid-cols-2 gap-12 items-start">
+              <div className="space-y-8">
+                <Card className="border-none shadow-lg">
+                  <CardContent className="p-6 flex items-center gap-4">
+                    <div className="w-14 h-14 bg-primary/10 rounded-full flex items-center justify-center shrink-0">
+                      <Icon name="Phone" size={24} className="text-primary" />
+                    </div>
+                    <div className="text-left">
+                      <h3 className="font-semibold mb-1">Телефон</h3>
+                      <p className="text-muted-foreground">+7 (495) 123-45-67</p>
+                    </div>
+                  </CardContent>
+                </Card>
 
-              <Card className="border-none shadow-lg">
-                <CardContent className="p-8 text-center">
-                  <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <Icon name="Mail" size={28} className="text-primary" />
-                  </div>
-                  <h3 className="font-semibold mb-2">Email</h3>
-                  <p className="text-muted-foreground">info@premium-realty.ru</p>
-                </CardContent>
-              </Card>
+                <Card className="border-none shadow-lg">
+                  <CardContent className="p-6 flex items-center gap-4">
+                    <div className="w-14 h-14 bg-primary/10 rounded-full flex items-center justify-center shrink-0">
+                      <Icon name="Mail" size={24} className="text-primary" />
+                    </div>
+                    <div className="text-left">
+                      <h3 className="font-semibold mb-1">Email</h3>
+                      <p className="text-muted-foreground">info@premium-realty.ru</p>
+                    </div>
+                  </CardContent>
+                </Card>
 
-              <Card className="border-none shadow-lg">
-                <CardContent className="p-8 text-center">
-                  <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <Icon name="MapPin" size={28} className="text-primary" />
-                  </div>
-                  <h3 className="font-semibold mb-2">Адрес</h3>
-                  <p className="text-muted-foreground">г. Москва, ул. Арбат, д. 10</p>
+                <Card className="border-none shadow-lg">
+                  <CardContent className="p-6 flex items-center gap-4">
+                    <div className="w-14 h-14 bg-primary/10 rounded-full flex items-center justify-center shrink-0">
+                      <Icon name="MapPin" size={24} className="text-primary" />
+                    </div>
+                    <div className="text-left">
+                      <h3 className="font-semibold mb-1">Адрес</h3>
+                      <p className="text-muted-foreground">г. Москва, ул. Арбат, д. 10</p>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              <Card className="border-none shadow-xl">
+                <CardContent className="p-8">
+                  <h3 className="text-2xl font-bold mb-6 text-center">Оставить заявку</h3>
+                  <form onSubmit={handleSubmit} className="space-y-6">
+                    <div className="space-y-2">
+                      <Label htmlFor="name">Ваше имя</Label>
+                      <Input 
+                        id="name"
+                        name="name"
+                        placeholder="Иван Иванов"
+                        value={formData.name}
+                        onChange={handleChange}
+                        required
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="phone">Телефон</Label>
+                      <Input 
+                        id="phone"
+                        name="phone"
+                        type="tel"
+                        placeholder="+7 (999) 123-45-67"
+                        value={formData.phone}
+                        onChange={handleChange}
+                        required
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="email">Email</Label>
+                      <Input 
+                        id="email"
+                        name="email"
+                        type="email"
+                        placeholder="ivan@example.com"
+                        value={formData.email}
+                        onChange={handleChange}
+                        required
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="message">Сообщение</Label>
+                      <Textarea 
+                        id="message"
+                        name="message"
+                        placeholder="Расскажите, что вас интересует..."
+                        value={formData.message}
+                        onChange={handleChange}
+                        rows={4}
+                        required
+                      />
+                    </div>
+
+                    <Button type="submit" size="lg" className="w-full text-lg">
+                      <Icon name="Send" size={20} className="mr-2" />
+                      Отправить заявку
+                    </Button>
+                  </form>
                 </CardContent>
               </Card>
             </div>
-
-            <Button size="lg" className="text-lg px-12 py-6">
-              <Icon name="MessageCircle" size={20} className="mr-2" />
-              Оставить заявку
-            </Button>
           </div>
         </div>
       </section>
